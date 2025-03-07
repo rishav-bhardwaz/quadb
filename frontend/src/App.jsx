@@ -1,35 +1,37 @@
-import React from "react";
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "./redux/authSlice";
 import Auth from "./components/Auth";
 import TaskInput from "./components/Taskinput";
 import TaskList from "./components/TaskList";
+import Sidebar from "./components/Sidebar";
+import Header from "./components/Header";
 
 const App = () => {
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const [isTaskInputOpen, setTaskInputOpen] = useState(false);
 
   const handleLogout = () => {
     dispatch(logout());
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      {!isAuthenticated ? (
-        <Auth />
-      ) : (
-        <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold">To-Do App</h1>
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 text-white px-4 py-2 rounded"
-            >
-              Logout
-            </button>
+    <div className="flex h-screen bg-gray-100">
+      {isAuthenticated ? (
+        <>
+          <Sidebar />
+          <div className="flex-1 flex flex-col">
+            <Header onOpen={() => setTaskInputOpen(true)} onLogout={handleLogout} />
+            <main className="flex-1 p-6">
+              <TaskList />
+            </main>
           </div>
-          <TaskInput />
-          <TaskList />
+          <TaskInput isOpen={isTaskInputOpen} onClose={() => setTaskInputOpen(false)} />
+        </>
+      ) : (
+        <div className="w-full flex items-center justify-center">
+          <Auth />
         </div>
       )}
     </div>
